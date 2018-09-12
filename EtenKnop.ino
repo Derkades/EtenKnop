@@ -1,18 +1,19 @@
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <PubSubClient.h>
+#include "passwd.h"
 
-const char* ssid = "aivd_afluisterbus_2a98e";
-const char* password =  "zonderdraadje_iot";
+const char* ssid = WIFI_SSID;
+const char* password = WIFI_PASSWD;
 
-const char* hostname = "192.168.2.1";
+const char* hostname = "192.168.1.100";
 const int port = 1883;
 
 const char* mqttUser = "etenKnop";
 const char* mqttPassword = "z3Z4poX4vSov54SP3Rrz";
 const char* mqttTopic = "iot/eten";
 
-const int buttonPin = 34;
+//const int buttonPin = 34;
 const int ledRPin = 25;
 const int ledGPin = 33;
 const int ledBPin = 32;
@@ -24,8 +25,6 @@ PubSubClient client(hostname, port, callback, wifiClient);
 
 void setup() {
   Serial.begin(115200);
-  
-  pinMode(buttonPin, INPUT);
 
   pinMode(ledRPin, OUTPUT);
   pinMode(ledGPin, OUTPUT);
@@ -33,13 +32,7 @@ void setup() {
 
   delay(200);
 
-  digitalWrite(ledRPin, HIGH);
-}
-
-void loop() {
-  if (digitalRead(buttonPin) == HIGH){
-    digitalWrite(ledRPin, LOW);
-    digitalWrite(ledBPin, HIGH);
+  digitalWrite(ledBPin, HIGH);
     
     WiFi.enableSTA(true);
 
@@ -63,18 +56,15 @@ void loop() {
     client.connect(clientId, mqttUser, mqttPassword);
     
     if (client.publish(mqttTopic, "knop")) {
-      digitalWrite(ledBPin, LOW);
+      
       Serial.println("ok");
 
+      delay(700);
+      digitalWrite(ledBPin, LOW);
       digitalWrite(ledGPin, HIGH);
-      delay(2500);
-      digitalWrite(ledGPin, LOW);
       
-      while (true){
-        digitalWrite(ledBPin, LOW);
-        delay(500);
-        digitalWrite(ledBPin, HIGH);
-        delay(500);
+      while(true){
+        delay(69);
       }
     } else {
       digitalWrite(ledBPin, LOW);
@@ -86,8 +76,9 @@ void loop() {
         digitalWrite(ledRPin, HIGH);
         delay(500);
       }
-    }
   }
+}
 
-  delay(100);
+void loop() {
+  delay(21);
 }
